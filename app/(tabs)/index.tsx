@@ -1,75 +1,143 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import {
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
+import {useState} from "react";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+interface todos {
+    id: number,
+    title: string,
+    isComplete: boolean,
+}
+
+export default function Index() {
+
+    const [todos, setTodos] = useState<todos[]>([
+        {
+            id: 1,
+            title: "Todo 1",
+            isComplete: false,
+        },
+        {
+            id: 2,
+            title: "Todo 2",
+            isComplete: false,
+        },
+        {
+            id: 3,
+            title: "Todo 3",
+            isComplete: false,
+        },
+        {
+            id: 4,
+            title: "Todo 4",
+            isComplete: false,
+        }
+
+    ]);
+
+    return (
+        <SafeAreaView style={styles.wholeContainer}>
+            <KeyboardAvoidingView
+                keyboardVerticalOffset={20}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+
+                style={styles.outerContainer}>
+                <View style={styles.topContainer}>
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>Todo App</Text>
+                    </View>
+                    <View>
+                        <FlatList
+                            keyboardShouldPersistTaps={"handled"}
+                            contentContainerStyle={styles.listContainer}
+                            data={todos}
+                            renderItem={({item}: any) => <View>
+                                <Text>{item.title}</Text>
+                            </View>}
+                            keyExtractor={(item: any) => item.id.toString()}
+                            ItemSeparatorComponent={() => <View style={styles.seperator}></View>}
+                        />
+                    </View>
+                </View>
+                <KeyboardAvoidingView
+                    style={styles.inputcont}
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    keyboardVerticalOffset={80} // adjust based on header height
+
+                >
+                    <TextInput
+                        style={styles.inputContainer}
+
+                    >
+
+                    </TextInput>
+                    <TouchableOpacity onPress={() => alert("Clicked")}>
+                        <FontAwesome name="plus" size={24} color="black"/>
+                    </TouchableOpacity>
+                </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+    header: {
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 10
+    },
+    headerText: {
+        fontSize: 20,
+        color: 'black',
+        fontWeight: '900',
+
+    },
+    listContainer: {
+        flexDirection: 'column',
+        justifyContent: "center",
+        alignItems: 'center',
+    },
+    seperator: {
+        height: 20,
+        width: 20,
+
+    },
+    inputContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#000',
+
+    },
+    inputcont: {
+        padding: 20,
+        flexDirection: 'row',
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 20,
+    },
+    outerContainer: {
+        flex: 1,
+        justifyContent: "space-between",
+        flexDirection: "column",
+    },
+    wholeContainer: {
+        flex: 1,
+        padding:20
+    },
+    topContainer: {
+        gap: 30
+    }
+})

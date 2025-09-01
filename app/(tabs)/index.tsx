@@ -12,6 +12,7 @@ import {
 import {useState} from "react";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Animated, {LinearTransition} from "react-native-reanimated";
+import {useRouter} from "expo-router";
 
 
 
@@ -22,6 +23,8 @@ interface todos {
 }
 
 export default function Index() {
+
+    const router = useRouter();
 
     const [todos, setTodos] = useState<todos[]>([
         {
@@ -58,6 +61,10 @@ export default function Index() {
         setTodoText("");
     }
 
+    const updateTodoStatus = (id: number) => {
+        setTodos((prev)=>prev.map((todo)=>todo.id === id ? {...todo,isComplete:!todo.isComplete}:todo))
+    }
+
 
 
     return (
@@ -76,9 +83,18 @@ export default function Index() {
                             keyboardShouldPersistTaps={"handled"}
                             contentContainerStyle={styles.listContainer}
                             data={[...todos].reverse()}
-                            renderItem={({item}: any) => <View>
-                                <Text>{item.title}</Text>
-                            </View>}
+                            renderItem={({item}: any) => <TouchableOpacity
+                                onPress={()=>router.push({pathname:"/todo/[id]",params:{id:item.id.toString(),title:item.title}})}
+                                onLongPress={()=>updateTodoStatus(item.id)}
+                                style={styles.todo}>
+                                <Text
+                                   style={{
+                                       textDecorationLine:item.isComplete ? "line-through" : "none",
+                                       color:item.isComplete? "gray" : "Black"
+                                   }}
+                                >{item.title}</Text>
+                            </TouchableOpacity>
+                        }
                             keyExtractor={(item: any) => item.id.toString()}
                             ItemSeparatorComponent={() => <View style={styles.seperator}></View>
                         }
@@ -120,8 +136,7 @@ const styles = StyleSheet.create({
     listContainer: {
         flexGrow:1,
         flexDirection: 'column',
-        justifyContent: "center",
-        alignItems: 'center',
+        alignItems: 'flex-start',
     },
     seperator: {
         height: 20,
@@ -153,4 +168,10 @@ const styles = StyleSheet.create({
         flex: 1,
         padding:20
     },
+    todo:{
+        borderWidth: 1,
+        borderColor: '#000',
+        padding: 10,
+        width: '100%',
+    }
 })

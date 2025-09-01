@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import {useState} from "react";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Animated, {LinearTransition} from "react-native-reanimated";
+
 
 
 interface todos {
@@ -44,6 +46,19 @@ export default function Index() {
         }
 
     ]);
+    const [todoText, setTodoText] = useState<string>("");
+
+    const addTodo = ():void => {
+        const newTodos = [...todos,{
+            id: Date.now(),
+            title: todoText,
+            isComplete: false,
+        }]
+        setTodos(newTodos);
+        setTodoText("");
+    }
+
+
 
     return (
         <SafeAreaView style={styles.wholeContainer}>
@@ -52,36 +67,36 @@ export default function Index() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 
                 style={styles.outerContainer}>
-                <View style={styles.topContainer}>
                     <View style={styles.header}>
                         <Text style={styles.headerText}>Todo App</Text>
                     </View>
-                    <View>
-                        <FlatList
+                        <Animated.FlatList
+                            itemLayoutAnimation={LinearTransition}
+                            keyboardDismissMode="on-drag"
                             keyboardShouldPersistTaps={"handled"}
                             contentContainerStyle={styles.listContainer}
-                            data={todos}
+                            data={[...todos].reverse()}
                             renderItem={({item}: any) => <View>
                                 <Text>{item.title}</Text>
                             </View>}
                             keyExtractor={(item: any) => item.id.toString()}
-                            ItemSeparatorComponent={() => <View style={styles.seperator}></View>}
+                            ItemSeparatorComponent={() => <View style={styles.seperator}></View>
+                        }
+                            showsVerticalScrollIndicator={false}
                         />
-                    </View>
-                </View>
                 <KeyboardAvoidingView
                     style={styles.inputcont}
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    keyboardVerticalOffset={80} // adjust based on header height
+                    keyboardVerticalOffset={80}
 
                 >
                     <TextInput
                         style={styles.inputContainer}
-
-                    >
-
-                    </TextInput>
-                    <TouchableOpacity onPress={() => alert("Clicked")}>
+                        value={todoText}
+                        onChangeText={(text:string)=>setTodoText(text)}
+                        placeholder="Enter todo..."
+                    />
+                    <TouchableOpacity onPress={() => addTodo()}>
                         <FontAwesome name="plus" size={24} color="black"/>
                     </TouchableOpacity>
                 </KeyboardAvoidingView>
@@ -97,12 +112,13 @@ const styles = StyleSheet.create({
         padding: 10
     },
     headerText: {
-        fontSize: 20,
+        fontSize: 40,
         color: 'black',
         fontWeight: '900',
 
     },
     listContainer: {
+        flexGrow:1,
         flexDirection: 'column',
         justifyContent: "center",
         alignItems: 'center',
@@ -137,7 +153,4 @@ const styles = StyleSheet.create({
         flex: 1,
         padding:20
     },
-    topContainer: {
-        gap: 30
-    }
 })

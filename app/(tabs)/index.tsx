@@ -72,7 +72,7 @@ export default function Index() {
     }
 
     const deleteTodo = (id: number) => {
-        Alert.alert("Are you sure you want to delete it?", "This action cannot be undone.", [
+        Alert.alert("Are you sure you want to delete this Todo Item?", "This action cannot be undone.", [
                 {
                     text: 'Cancel',
                     onPress: () => {
